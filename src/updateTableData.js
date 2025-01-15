@@ -249,14 +249,19 @@ const generateStatistics = (resultRows) => {
   return stats;
 };
 
-(async () => {
+const updateTableData = async () => {
   console.log(`-------- Update table data --------`);
 
   const results = await createResultsData();
   const fixedResults = fixResults(results);
   const statistics = generateStatistics(fixedResults);
   const flattenedStatistics = flattenStatistics(statistics);
-  console.log(flattenedStatistics);
 
-  // console.log(flattenedStatistics);
-})();
+  return flattenedStatistics;
+};
+
+updateTableData();
+
+module.exports = {
+  updateTableData,
+};
