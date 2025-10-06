@@ -1,7 +1,7 @@
 const { google } = require("googleapis");
 require("dotenv").config();
 
-const getExistingJobPosts = async () => {
+const getTableStats = async () => {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -19,12 +19,26 @@ const getExistingJobPosts = async () => {
   });
   const data = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.GOOGLE_SHEET_ID,
-    range: "A1:H1000",
+    range: "A1:V16",
   });
 
-  return data.data.values;
+  const formattedTableData = data.data.values.reduce(
+    (prev, curr) => ({
+      ...prev,
+      [curr[0].split(":")[1]]: curr.slice(1).reduce(
+        (p, c) => ({
+          ...p,
+          [c.split(":")[0]]: parseFloat(c.split(":")[1]),
+        }),
+        {}
+      ),
+    }),
+    {}
+  );
+
+  return formattedTableData;
 };
 
 module.exports = {
-  getExistingJobPosts,
+  getTableStats,
 };

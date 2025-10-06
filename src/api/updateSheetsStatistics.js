@@ -1,16 +1,7 @@
 const { google } = require("googleapis");
 require("dotenv").config();
-// const { Resend } = require("resend");
 
-// const resend = new Resend(process.env.RESEND_KEY);
-
-const addJobPost = async ({
-  titleText,
-  descriptionText,
-  url,
-  company,
-  lastUpdated,
-}) => {
+const updateSheetsStatistics = async (statistics) => {
   try {
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -28,24 +19,28 @@ const addJobPost = async ({
       version: "v4",
     });
 
-    const newData = [[company, lastUpdated, titleText, descriptionText, url]];
+    const sheetsFormattedData = Object.keys(statistics).reduce(
+      (prev, curr) => [
+        ...prev,
+        [
+          `team:${curr}`,
+          ...Object.keys(statistics[curr]).map(
+            (key) => `${key}:${statistics[curr][key]}`
+          ),
+        ],
+      ],
+      []
+    );
 
-    const range = "A1:E1";
+    const range = "A1:V16";
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range,
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: newData,
+        values: sheetsFormattedData,
       },
     });
-
-    // resend.emails.send({
-    //   from: "onboarding@resend.dev",
-    //   to: "joel@buhrmansolutions.com",
-    //   subject: "Added new job post",
-    //   html: `<p>Just added <strong>${titleText}</strong> from <strong>${company}</strong>!</p>`,
-    // });
 
     return { success: true };
   } catch (e) {
@@ -55,5 +50,5 @@ const addJobPost = async ({
 };
 
 module.exports = {
-  addJobPost,
+  updateSheetsStatistics,
 };

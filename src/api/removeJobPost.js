@@ -29,11 +29,6 @@ const removeJobPost = async (indexesToRemove) => {
         .filter((_post, index) => !indexesToRemove.includes(index))
         .concat(new Array(indexesToRemove.length).fill(new Array(5).fill("")));
 
-      // console.log(
-      //   `-------- Removing: --------\n${indexesToRemove.map(
-      //     (i) => existingJobPosts[i][2] + "\n"
-      //   )} \n------------------------`
-      // );
       const range = `A1:E${existingJobPosts.length}`;
 
       await sheets.spreadsheets.values.update({

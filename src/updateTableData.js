@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const { updateSheetsStatistics } = require("./api/updateSheetsStatistics");
 
 const { results, GRASS_TEAMS } = require("./teams");
 
@@ -249,19 +250,18 @@ const generateStatistics = (resultRows) => {
   return stats;
 };
 
-const updateTableData = async () => {
+const updateTableStatistics = async () => {
   console.log(`-------- Update table data --------`);
 
   const results = await createResultsData();
   const fixedResults = fixResults(results);
   const statistics = generateStatistics(fixedResults);
   const flattenedStatistics = flattenStatistics(statistics);
+  updateSheetsStatistics(flattenedStatistics);
 
   return flattenedStatistics;
 };
 
-updateTableData();
-
 module.exports = {
-  updateTableData,
+  updateTableStatistics,
 };
